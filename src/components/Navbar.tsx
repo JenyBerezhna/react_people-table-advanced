@@ -1,26 +1,27 @@
-export const Navbar = () => {
-  return (
-    <nav
-      data-cy="nav"
-      className="navbar is-fixed-top has-shadow"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div className="container">
-        <div className="navbar-brand">
-          <a className="navbar-item" href="#/">
-            Home
-          </a>
+import { NavLink } from 'react-router-dom';
 
-          <a
-            aria-current="page"
-            className="navbar-item has-background-grey-lighter"
-            href="#/people"
-          >
-            People
-          </a>
-        </div>
+export const Navbar = () => (
+  <nav
+    data-cy="nav"
+    className="navbar is-fixed-top has-shadow"
+    role="navigation"
+    aria-label="main navigation"
+  >
+    <div className="container">
+      <div className="navbar-brand">
+        <NavLink to="/" className="navbar-item">
+          Home
+        </NavLink>
+
+        <NavLink
+          to="/people"
+          className={({ isActive }) =>
+            `navbar-item ${isActive ? 'has-background-grey-lighter' : ''}`
+          }
+        >
+          People
+        </NavLink>
       </div>
-    </nav>
-  );
-};
+    </div>
+  </nav>
+);
