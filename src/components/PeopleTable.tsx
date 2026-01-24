@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { SearchLink } from './SearchLink';
 import { Person } from '../types/Person';
 import { SortField } from '../types/SortField';
@@ -21,6 +21,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
   order,
 }) => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
 
   const getNextParams = (column: string): SortParams => {
     if (sort !== column) {
@@ -39,11 +40,11 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
       return <i className="fas fa-sort" />;
     }
 
-    if (order === 'desc') {
-      return <i className="fas fa-sort-down" />;
-    }
-
-    return <i className="fas fa-sort-up" />;
+    return order === 'desc' ? (
+      <i className="fas fa-sort-down" />
+    ) : (
+      <i className="fas fa-sort-up" />
+    );
   };
 
   return (
@@ -61,7 +62,6 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
-
           <th>
             <span className="is-flex is-flex-wrap-nowrap">
               Sex
@@ -70,7 +70,6 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
-
           <th>
             <span className="is-flex is-flex-wrap-nowrap">
               Born
@@ -79,7 +78,6 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
-
           <th>
             <span className="is-flex is-flex-wrap-nowrap">
               Died
@@ -88,34 +86,42 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
-
           <th>Mother</th>
           <th>Father</th>
         </tr>
       </thead>
 
       <tbody>
-        {people.map(person => (
-          <tr key={person.slug} data-cy="person">
-            <td>
-              <Link
-                to={{
-                  pathname: `/people/${person.slug}`,
-                  search: searchParams.toString(),
-                }}
-              >
-                {person.name}
-              </Link>
-            </td>
+        {people.map(person => {
+          const isSelected = location.pathname === `/people/${person.slug}`;
 
-            <td>{person.sex}</td>
-            <td>{person.born}</td>
-            <td>{person.died}</td>
+          return (
+            <tr
+              key={person.slug}
+              data-cy="person"
+              className={isSelected ? 'is-selected' : undefined}
+            >
+              <td>
+                <Link
+                  to={{
+                    pathname: `/people/${person.slug}`,
+                    search: searchParams.toString(),
+                  }}
+                  className={person.sex === 'f' ? 'has-text-danger' : undefined}
+                >
+                  {person.name}
+                </Link>
+              </td>
 
-            <td>{person.motherName || '-'}</td>
-            <td>{person.fatherName || '-'}</td>
-          </tr>
-        ))}
+              <td>{person.sex}</td>
+              <td>{person.born}</td>
+              <td>{person.died}</td>
+
+              <td>{person.motherName || '-'}</td>
+              <td>{person.fatherName || '-'}</td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

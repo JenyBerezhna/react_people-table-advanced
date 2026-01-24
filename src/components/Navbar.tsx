@@ -9,7 +9,13 @@ export const Navbar = () => (
   >
     <div className="container">
       <div className="navbar-brand">
-        <NavLink to="/" className="navbar-item">
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) =>
+            `navbar-item ${isActive ? 'has-background-grey-lighter' : ''}`
+          }
+        >
           Home
         </NavLink>
 
