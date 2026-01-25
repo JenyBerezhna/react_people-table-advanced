@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { SearchLink } from './SearchLink';
+import { PersonLink } from './PersonLink';
 import { Person } from '../types/Person';
 import { SortField } from '../types/SortField';
 
@@ -11,7 +12,7 @@ type PeopleTableProps = {
 };
 
 type SortParams = {
-  sort: string | null;
+  sort: SortField | null;
   order: 'asc' | 'desc' | null;
 };
 
@@ -22,8 +23,9 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
 }) => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const search = searchParams.toString();
 
-  const getNextParams = (column: string): SortParams => {
+  const getNextParams = (column: SortField): SortParams => {
     if (sort !== column) {
       return { sort: column, order: 'asc' };
     }
@@ -47,6 +49,39 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
     );
   };
 
+  const resolveParent = (
+    parentObj: Person | undefined,
+    name: string | null,
+    slug: string | null,
+    sex: 'm' | 'f',
+  ) => ({
+    name: parentObj?.name ?? name,
+    slug: parentObj?.slug ?? slug,
+    sex,
+  });
+
+  const renderParent = (
+    parent: ReturnType<typeof resolveParent>,
+    searchQuery: string,
+  ) => {
+    if (!parent.name) {
+      return '-';
+    }
+
+    if (!parent.slug) {
+      return parent.name;
+    }
+
+    return (
+      <PersonLink
+        slug={parent.slug}
+        name={parent.name}
+        sex={parent.sex}
+        search={searchQuery}
+      />
+    );
+  };
+
   return (
     <table
       data-cy="peopleTable"
@@ -62,6 +97,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
+
           <th>
             <span className="is-flex is-flex-wrap-nowrap">
               Sex
@@ -70,6 +106,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
+
           <th>
             <span className="is-flex is-flex-wrap-nowrap">
               Born
@@ -78,6 +115,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
+
           <th>
             <span className="is-flex is-flex-wrap-nowrap">
               Died
@@ -86,6 +124,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               </SearchLink>
             </span>
           </th>
+
           <th>Mother</th>
           <th>Father</th>
         </tr>
@@ -95,6 +134,20 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
         {people.map(person => {
           const isSelected = location.pathname === `/people/${person.slug}`;
 
+          const mother = resolveParent(
+            person.mother,
+            person.motherName,
+            person.motherSlug,
+            'f',
+          );
+
+          const father = resolveParent(
+            person.father,
+            person.fatherName,
+            person.fatherSlug,
+            'm',
+          );
+
           return (
             <tr
               key={person.slug}
@@ -103,24 +156,22 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
                 isSelected ? 'is-selected has-background-warning' : undefined
               }
             >
+              {/* Person name */}
               <td>
-                <Link
-                  to={{
-                    pathname: `/people/${person.slug}`,
-                    search: searchParams.toString(),
-                  }}
-                  className={person.sex === 'f' ? 'has-text-danger' : undefined}
-                >
-                  {person.name}
-                </Link>
+                <PersonLink
+                  slug={person.slug}
+                  name={person.name}
+                  sex={person.sex}
+                  search={search}
+                />
               </td>
 
               <td>{person.sex}</td>
               <td>{person.born}</td>
               <td>{person.died}</td>
 
-              <td>{person.motherName || '-'}</td>
-              <td>{person.fatherName || '-'}</td>
+              <td>{renderParent(mother, search)}</td>
+              <td>{renderParent(father, search)}</td>
             </tr>
           );
         })}
