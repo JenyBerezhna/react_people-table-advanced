@@ -4,14 +4,10 @@ import { Person } from '../types/Person';
 
 export const usePeople = (mockData?: Person[]) => {
   const [people, setPeople] = useState<Person[]>(mockData || []);
-  const [loading, setLoading] = useState(!mockData); // loading only if no mock
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (mockData) {
-      return;
-    }
-
     setLoading(true);
     setError(false);
 
@@ -19,7 +15,7 @@ export const usePeople = (mockData?: Person[]) => {
       .then(data => setPeople(data))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [mockData]);
+  }, []);
 
   return { people, loading, error };
 };

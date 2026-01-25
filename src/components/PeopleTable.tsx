@@ -99,7 +99,9 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
             <tr
               key={person.slug}
               data-cy="person"
-              className={isSelected ? 'is-selected' : undefined}
+              className={
+                isSelected ? 'is-selected has-background-warning' : undefined
+              }
             >
               <td>
                 <Link
