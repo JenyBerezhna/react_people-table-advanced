@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { getPeople } from '../api';
 import { Person } from '../types/Person';
 
@@ -8,6 +8,10 @@ export const usePeople = (mockData?: Person[]) => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (mockData) {
+      return;
+    }
+
     setLoading(true);
     setError(false);
 
@@ -15,7 +19,15 @@ export const usePeople = (mockData?: Person[]) => {
       .then(data => setPeople(data))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, []);
+  }, [mockData]);
 
-  return { people, loading, error };
+  const normalizedPeople = useMemo(() => {
+    return people.map(person => ({
+      ...person,
+      mother: people.find(p => p.slug === person.motherSlug),
+      father: people.find(p => p.slug === person.fatherSlug),
+    }));
+  }, [people]);
+
+  return { people: normalizedPeople, loading, error };
 };

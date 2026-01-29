@@ -97,7 +97,6 @@ export const PeopleFilters = () => {
         </div>
       </div>
 
-      {/* Reset */}
       <div className="panel-block">
         <SearchLink
           className="button is-link is-outlined is-fullwidth"

@@ -171,6 +171,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               <td>{person.died}</td>
 
               <td>{renderParent(mother, search)}</td>
+
               <td>{renderParent(father, search)}</td>
             </tr>
           );

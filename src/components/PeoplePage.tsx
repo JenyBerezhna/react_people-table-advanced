@@ -6,6 +6,7 @@ import { Loader } from './Loader';
 import { PeopleTable } from './PeopleTable';
 import { usePeople } from '../hooks/usePeople';
 
+
 export const PeoplePage = () => {
   const [searchParams] = useSearchParams();
   const { people, loading, error } = usePeople();
@@ -38,6 +39,7 @@ export const PeoplePage = () => {
     return o === 'asc' || o === 'desc' ? o : null;
   })();
 
+
   // --- FILTERING + SORTING ---------------------------------------------------
 
   const filtered = useMemo(() => {
@@ -46,8 +48,8 @@ export const PeoplePage = () => {
     if (query) {
       result = result.filter(p => {
         const name = p.name.toLowerCase();
-        const mother = p.motherName?.toLowerCase() ?? '';
-        const father = p.fatherName?.toLowerCase() ?? '';
+        const mother = p.mother?.name.toLowerCase() ?? '';
+        const father = p.father?.name.toLowerCase() ?? '';
 
         return (
           name.includes(query) ||
@@ -56,6 +58,7 @@ export const PeoplePage = () => {
         );
       });
     }
+
 
     if (sex) {
       result = result.filter(p => p.sex === sex);
