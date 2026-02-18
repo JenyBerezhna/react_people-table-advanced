@@ -1,27 +1,25 @@
 import { useSearchParams } from 'react-router-dom';
 import { SearchLink } from './SearchLink';
+import { getSearchWith } from '../utils/searchHelper';
 
 export const PeopleFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const queryParam = searchParams.get('query') || '';
+  const queryParam = searchParams.get('query') ?? '';
   const selectedCenturies = searchParams.getAll('centuries');
 
   const toggleCentury = (century: string): void => {
-    const params = new URLSearchParams(searchParams);
-    const current: string[] = params.getAll('centuries');
+    const current = searchParams.getAll('centuries');
 
-    const updated: string[] = current.includes(century)
-      ? current.filter((c: string) => c !== century)
+    const updated = current.includes(century)
+      ? current.filter(c => c !== century)
       : [...current, century];
 
-    params.delete('centuries');
+    const newSearch = getSearchWith(searchParams, {
+      centuries: updated.length > 0 ? updated : null,
+    });
 
-    if (updated.length > 0) {
-      updated.forEach((c: string) => params.append('centuries', c));
-    }
-
-    setSearchParams(params);
+    setSearchParams(newSearch);
   };
 
   return (
@@ -45,16 +43,13 @@ export const PeopleFilters = () => {
             placeholder="Search"
             value={queryParam}
             onChange={e => {
-              const value = e.target.value.trim();
-              const params = new URLSearchParams(searchParams);
+              const value = e.target.value;
 
-              if (value) {
-                params.set('query', value);
-              } else {
-                params.delete('query');
-              }
+              const newSearch = getSearchWith(searchParams, {
+                query: value === '' ? null : value,
+              });
 
-              setSearchParams(params);
+              setSearchParams(newSearch);
             }}
           />
 
@@ -72,7 +67,9 @@ export const PeopleFilters = () => {
               <button
                 key={c}
                 data-cy="century"
-                className={`button mr-1 ${selectedCenturies.includes(c) ? 'is-info' : ''}`}
+                className={`button mr-1 ${
+                  selectedCenturies.includes(c) ? 'is-info' : ''
+                }`}
                 onClick={() => toggleCentury(c)}
               >
                 {c}
@@ -85,10 +82,11 @@ export const PeopleFilters = () => {
               data-cy="centuryALL"
               className="button is-success is-outlined"
               onClick={() => {
-                const params = new URLSearchParams(searchParams);
+                const newSearch = getSearchWith(searchParams, {
+                  centuries: null,
+                });
 
-                params.delete('centuries');
-                setSearchParams(params);
+                setSearchParams(newSearch);
               }}
             >
               All
@@ -97,6 +95,7 @@ export const PeopleFilters = () => {
         </div>
       </div>
 
+      {/* Reset All */}
       <div className="panel-block">
         <SearchLink
           className="button is-link is-outlined is-fullwidth"

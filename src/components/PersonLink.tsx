@@ -5,15 +5,26 @@ type Props = {
   name: string;
   sex: 'm' | 'f';
   search: string;
+  colorClass?: string;
 };
 
-export const PersonLink: React.FC<Props> = ({ slug, name, sex, search }) => {
-  const isFemale = sex === 'f';
+export const PersonLink: React.FC<Props> = ({
+  slug,
+  name,
+  sex,
+  search,
+  colorClass,
+}) => {
+  const finalClass =
+    colorClass ?? (sex === 'f' ? 'has-text-danger' : 'has-text-link');
 
   return (
     <Link
-      to={`/people/${slug}?${search}`}
-      className={isFemale ? 'has-text-danger' : undefined}
+      to={{
+        pathname: `/people/${slug}`,
+        search: search ? `?${search}` : '',
+      }}
+      className={finalClass}
     >
       {name}
     </Link>

@@ -37,7 +37,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
     return { sort: null, order: null };
   };
 
-  const getSortIcon = (column: string): JSX.Element => {
+  const getSortIcon = (column: SortField): JSX.Element => {
     if (sort !== column) {
       return <i className="fas fa-sort" />;
     }
@@ -49,20 +49,22 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
     );
   };
 
+  // Normalize parent data
   const resolveParent = (
     parentObj: Person | undefined,
     name: string | null,
-    slug: string | null,
+    slug: string | null | undefined,
     sex: 'm' | 'f',
   ) => ({
-    name: parentObj?.name ?? name,
-    slug: parentObj?.slug ?? slug,
+    name: parentObj?.name ?? name ?? null,
+    slug: parentObj?.slug ?? slug ?? null,
     sex,
   });
 
   const renderParent = (
     parent: ReturnType<typeof resolveParent>,
     searchQuery: string,
+    role: 'mother' | 'father',
   ) => {
     if (!parent.name) {
       return '-';
@@ -72,12 +74,15 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
       return parent.name;
     }
 
+    const colorClass = role === 'mother' ? 'has-text-danger' : 'has-text-link';
+
     return (
       <PersonLink
         slug={parent.slug}
         name={parent.name}
         sex={parent.sex}
         search={searchQuery}
+        colorClass={colorClass}
       />
     );
   };
@@ -134,17 +139,20 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
         {people.map(person => {
           const isSelected = location.pathname === `/people/${person.slug}`;
 
+          const motherSlug = person.mother?.slug ?? person.motherSlug ?? null;
+          const fatherSlug = person.father?.slug ?? person.fatherSlug ?? null;
+
           const mother = resolveParent(
             person.mother,
             person.motherName,
-            person.motherSlug,
+            motherSlug,
             'f',
           );
 
           const father = resolveParent(
             person.father,
             person.fatherName,
-            person.fatherSlug,
+            fatherSlug,
             'm',
           );
 
@@ -156,23 +164,25 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
                 isSelected ? 'is-selected has-background-warning' : undefined
               }
             >
-              {/* Person name */}
               <td>
-                <PersonLink
-                  slug={person.slug}
-                  name={person.name}
-                  sex={person.sex}
-                  search={search}
-                />
+                {person.slug ? (
+                  <PersonLink
+                    slug={person.slug}
+                    name={person.name}
+                    sex={person.sex}
+                    search={search}
+                  />
+                ) : (
+                  person.name
+                )}
               </td>
 
               <td>{person.sex}</td>
               <td>{person.born}</td>
               <td>{person.died}</td>
 
-              <td>{renderParent(mother, search)}</td>
-
-              <td>{renderParent(father, search)}</td>
+              <td>{renderParent(mother, search, 'mother')}</td>
+              <td>{renderParent(father, search, 'father')}</td>
             </tr>
           );
         })}
