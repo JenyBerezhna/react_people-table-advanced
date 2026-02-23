@@ -13,19 +13,26 @@ export const ParentLink: React.FC<ParentLinkProps> = ({
   sex,
   search,
 }) => {
-  if (!name || !slug) {
+  // No data at all → "-"
+  if (!name && !slug) {
     return <>-</>;
   }
 
-  const className = sex === 'f' ? 'has-text-danger' : 'has-text-link';
+  const colorClass = sex === 'f' ? 'has-text-danger' : 'has-text-link';
 
-  return (
-    <PersonLink
-      slug={slug}
-      name={name}
-      sex={sex}
-      search={search}
-      className={className}
-    />
-  );
+  // If slug exists → always render a link
+  if (slug) {
+    return (
+      <PersonLink
+        slug={slug}
+        name={name ?? ''}
+        sex={sex}
+        search={search}
+        className={colorClass}
+      />
+    );
+  }
+
+  // If only name exists → plain colored text
+  return <>{name}</>;
 };
