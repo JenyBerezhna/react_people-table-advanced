@@ -46,7 +46,7 @@ export const PeopleFilters = () => {
               const value = e.target.value;
 
               const newSearch = getSearchWith(searchParams, {
-                query: value === '' ? null : value,
+                query: value.trim() ? value : null,
               });
 
               setSearchParams(newSearch);

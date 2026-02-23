@@ -2,16 +2,12 @@
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { SearchLink } from './SearchLink';
 import { PersonLink } from './PersonLink';
+import { ParentLink } from './ParentLink';
 import { Person } from '../types/Person';
 import { SortField } from '../types/SortField';
 
 type PeopleTableProps = {
   people: Person[];
-  sort: SortField | null;
-  order: 'asc' | 'desc' | null;
-};
-
-type SortParams = {
   sort: SortField | null;
   order: 'asc' | 'desc' | null;
 };
@@ -25,7 +21,11 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
   const location = useLocation();
   const search = searchParams.toString();
 
-  const getNextParams = (column: SortField): SortParams => {
+  // ----------------------------
+  // Sorting helpers
+  // ----------------------------
+
+  const getNextParams = (column: SortField) => {
     if (sort !== column) {
       return { sort: column, order: 'asc' };
     }
@@ -37,7 +37,7 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
     return { sort: null, order: null };
   };
 
-  const getSortIcon = (column: SortField): JSX.Element => {
+  const getSortIcon = (column: SortField) => {
     if (sort !== column) {
       return <i className="fas fa-sort" />;
     }
@@ -49,43 +49,9 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
     );
   };
 
-  // Normalize parent data
-  const resolveParent = (
-    parentObj: Person | undefined,
-    name: string | null,
-    slug: string | null | undefined,
-    sex: 'm' | 'f',
-  ) => ({
-    name: parentObj?.name ?? name ?? null,
-    slug: parentObj?.slug ?? slug ?? null,
-    sex,
-  });
-
-  const renderParent = (
-    parent: ReturnType<typeof resolveParent>,
-    searchQuery: string,
-    role: 'mother' | 'father',
-  ) => {
-    if (!parent.name) {
-      return '-';
-    }
-
-    if (!parent.slug) {
-      return parent.name;
-    }
-
-    const colorClass = role === 'mother' ? 'has-text-danger' : 'has-text-link';
-
-    return (
-      <PersonLink
-        slug={parent.slug}
-        name={parent.name}
-        sex={parent.sex}
-        search={searchQuery}
-        colorClass={colorClass}
-      />
-    );
-  };
+  // ----------------------------
+  // Render table
+  // ----------------------------
 
   return (
     <table
@@ -139,23 +105,6 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
         {people.map(person => {
           const isSelected = location.pathname === `/people/${person.slug}`;
 
-          const motherSlug = person.mother?.slug ?? person.motherSlug ?? null;
-          const fatherSlug = person.father?.slug ?? person.fatherSlug ?? null;
-
-          const mother = resolveParent(
-            person.mother,
-            person.motherName,
-            motherSlug,
-            'f',
-          );
-
-          const father = resolveParent(
-            person.father,
-            person.fatherName,
-            fatherSlug,
-            'm',
-          );
-
           return (
             <tr
               key={person.slug}
@@ -164,25 +113,39 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
                 isSelected ? 'is-selected has-background-warning' : undefined
               }
             >
+              {/* Person name */}
               <td>
-                {person.slug ? (
-                  <PersonLink
-                    slug={person.slug}
-                    name={person.name}
-                    sex={person.sex}
-                    search={search}
-                  />
-                ) : (
-                  person.name
-                )}
+                <PersonLink
+                  slug={person.slug}
+                  name={person.name}
+                  sex={person.sex}
+                  search={search}
+                />
               </td>
 
               <td>{person.sex}</td>
               <td>{person.born}</td>
               <td>{person.died}</td>
 
-              <td>{renderParent(mother, search, 'mother')}</td>
-              <td>{renderParent(father, search, 'father')}</td>
+              {/* Mother */}
+              <td>
+                <ParentLink
+                  slug={person.mother?.slug ?? person.motherSlug}
+                  name={person.mother?.name ?? person.motherName}
+                  sex="f"
+                  search={search}
+                />
+              </td>
+
+              {/* Father */}
+              <td>
+                <ParentLink
+                  slug={person.father?.slug ?? person.fatherSlug}
+                  name={person.father?.name ?? person.fatherName}
+                  sex="m"
+                  search={search}
+                />
+              </td>
             </tr>
           );
         })}

@@ -1,22 +1,22 @@
 import { Link } from 'react-router-dom';
 
-type Props = {
+type PersonLinkProps = {
   slug: string;
   name: string;
   sex: 'm' | 'f';
   search: string;
-  colorClass?: string;
+  className?: string;
 };
 
-export const PersonLink: React.FC<Props> = ({
+export const PersonLink: React.FC<PersonLinkProps> = ({
   slug,
   name,
   sex,
   search,
-  colorClass,
+  className,
 }) => {
-  const finalClass =
-    colorClass ?? (sex === 'f' ? 'has-text-danger' : 'has-text-link');
+  const colorClass =
+    className ?? (sex === 'f' ? 'has-text-danger' : 'has-text-link');
 
   return (
     <Link
@@ -24,7 +24,7 @@ export const PersonLink: React.FC<Props> = ({
         pathname: `/people/${slug}`,
         search: search ? `?${search}` : '',
       }}
-      className={finalClass}
+      className={colorClass}
     >
       {name}
     </Link>
