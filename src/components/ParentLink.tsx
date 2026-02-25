@@ -26,7 +26,7 @@ export const ParentLink: React.FC<ParentLinkProps> = ({
       <Link
         to={{
           pathname: `/people/${slug}`,
-          search: search ? `?${search}` : '',
+          search: search || '',
         }}
         className={colorClass}
       >

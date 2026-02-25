@@ -22,7 +22,7 @@ export const PersonLink: React.FC<PersonLinkProps> = ({
     <Link
       to={{
         pathname: `/people/${slug}`,
-        search: search ? `?${search}` : '',
+        search: search || '',
       }}
       className={colorClass}
     >
