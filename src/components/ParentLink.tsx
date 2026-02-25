@@ -21,7 +21,7 @@ export const ParentLink: React.FC<ParentLinkProps> = ({
   const colorClass = sex === 'f' ? 'has-text-danger' : 'has-text-link';
 
   // If slug exists → always render a link
-  if (slug) {
+  if (slug && name) {
     return (
       <PersonLink
         slug={slug}
