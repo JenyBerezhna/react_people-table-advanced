@@ -2,6 +2,32 @@ import { useEffect, useState, useMemo } from 'react';
 import { getPeople } from '../api';
 import { Person } from '../types/Person';
 
+type NormalizedParent = {
+  name: string | null;
+  slug: string | null;
+  person: Person | null;
+};
+
+const resolveParent = (
+  people: Person[],
+  slug: string | null,
+  name: string | null,
+): NormalizedParent => {
+  // 1. Try to resolve by slug
+  let person = slug ? (people.find(p => p.slug === slug) ?? null) : null;
+
+  // 2. If slug missing, resolve by name
+  if (!person && name) {
+    person = people.find(p => p.name === name) ?? null;
+  }
+
+  return {
+    name: person?.name ?? name ?? null,
+    slug: person?.slug ?? slug ?? null,
+    person,
+  };
+};
+
 export const usePeople = (mockData?: Person[]) => {
   const [people, setPeople] = useState<Person[]>(mockData || []);
   const [loading, setLoading] = useState(false);
@@ -24,8 +50,17 @@ export const usePeople = (mockData?: Person[]) => {
   const normalizedPeople = useMemo(() => {
     return people.map(person => ({
       ...person,
-      mother: people.find(p => p.slug === person.motherSlug),
-      father: people.find(p => p.slug === person.fatherSlug),
+
+      mother: resolveParent(
+        people,
+        person.motherSlug ?? null,
+        person.motherName ?? null,
+      ),
+      father: resolveParent(
+        people,
+        person.fatherSlug ?? null,
+        person.fatherName ?? null,
+      ),
     }));
   }, [people]);
 

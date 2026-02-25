@@ -21,10 +21,6 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
   const location = useLocation();
   const search = searchParams.toString();
 
-  // ----------------------------
-  // Sorting helpers
-  // ----------------------------
-
   const getNextParams = (column: SortField) => {
     if (sort !== column) {
       return { sort: column, order: 'asc' };
@@ -48,10 +44,6 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
       <i className="fas fa-sort-up" />
     );
   };
-
-  // ----------------------------
-  // Render table
-  // ----------------------------
 
   return (
     <table
@@ -113,7 +105,6 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
                 isSelected ? 'is-selected has-background-warning' : undefined
               }
             >
-              {/* Person name */}
               <td>
                 <PersonLink
                   slug={person.slug}
@@ -127,21 +118,19 @@ export const PeopleTable: React.FC<PeopleTableProps> = ({
               <td>{person.born}</td>
               <td>{person.died}</td>
 
-              {/* Mother */}
               <td>
                 <ParentLink
-                  slug={person.mother?.slug ?? person.motherSlug}
-                  name={person.mother?.name ?? person.motherName}
+                  name={person.mother.name}
+                  slug={person.mother.slug}
                   sex="f"
                   search={search}
                 />
               </td>
 
-              {/* Father */}
               <td>
                 <ParentLink
-                  slug={person.father?.slug ?? person.fatherSlug}
-                  name={person.father?.name ?? person.fatherName}
+                  name={person.father.name}
+                  slug={person.father.slug}
                   sex="m"
                   search={search}
                 />
