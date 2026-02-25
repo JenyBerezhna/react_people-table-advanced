@@ -11,13 +11,15 @@ export const ParentLink: React.FC<ParentLinkProps> = ({
   sex,
   search,
 }) => {
+  //  No parent → show "-"
   if (!name) {
-    return null;
+    return <span>-</span>;
   }
 
-  const colorClass = sex === 'f' ? 'has-text-danger' : 'has-text-link';
-
+  // Parent exists AND has slug → colored link
   if (slug) {
+    const colorClass = sex === 'f' ? 'has-text-danger' : 'has-text-link';
+
     return (
       <a
         href={`#/people/${slug}${search ? `?${search}` : ''}`}
@@ -28,5 +30,6 @@ export const ParentLink: React.FC<ParentLinkProps> = ({
     );
   }
 
-  return <span className={colorClass}>{name}</span>;
+  // Parent exists but no slug → plain text
+  return <span>{name}</span>;
 };

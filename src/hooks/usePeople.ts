@@ -13,10 +13,10 @@ const resolveParent = (
   slug: string | null,
   name: string | null,
 ): NormalizedParent => {
-  // 1. Try to resolve by slug
+  //  Try to resolve by slug
   let person = slug ? (people.find(p => p.slug === slug) ?? null) : null;
 
-  // 2. If slug missing, resolve by name
+  //  If slug missing, resolve by name
   if (!person && name) {
     person = people.find(p => p.name === name) ?? null;
   }
