@@ -48,8 +48,8 @@ export const PeoplePage = () => {
     if (query) {
       result = result.filter(p => {
         const name = p.name.toLowerCase();
-        const mother = p.mother?.name.toLowerCase() ?? '';
-        const father = p.father?.name.toLowerCase() ?? '';
+        const mother = p.motherName?.toLowerCase() ?? '';
+        const father = p.fatherName?.toLowerCase() ?? '';
 
         return (
           name.includes(query) ||
@@ -58,6 +58,7 @@ export const PeoplePage = () => {
         );
       });
     }
+
 
 
     if (sex) {

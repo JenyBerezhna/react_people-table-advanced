@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 interface ParentLinkProps {
   slug?: string | null;
   name: string | null;
@@ -11,22 +13,25 @@ export const ParentLink: React.FC<ParentLinkProps> = ({
   sex,
   search,
 }) => {
-  //  No parent → show "-"
+  // No parent → show "-"
   if (!name) {
     return <span>-</span>;
   }
 
-  // Parent exists AND has slug → colored link
+  // Parent exists AND has slug → colored client-side link
   if (slug) {
     const colorClass = sex === 'f' ? 'has-text-danger' : 'has-text-link';
 
     return (
-      <a
-        href={`#/people/${slug}${search ? `?${search}` : ''}`}
+      <Link
+        to={{
+          pathname: `/people/${slug}`,
+          search: search ? `?${search}` : '',
+        }}
         className={colorClass}
       >
         {name}
-      </a>
+      </Link>
     );
   }
 
